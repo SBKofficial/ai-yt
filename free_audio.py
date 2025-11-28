@@ -4,42 +4,51 @@ import asyncio
 import os
 
 async def generate_voiceover(json_filename):
-    # 1. Load Data
     with open(json_filename, 'r') as f:
         data = json.load(f)
     
     full_script = " ".join([seg['text'] for seg in data['segments']])
     folder_name = json_filename.replace(".json", "")
     
-    # Paths
     audio_path = f"assets/{folder_name}/voiceover.mp3"
     subtitle_path = f"assets/{folder_name}/subtitles.vtt"
     os.makedirs(os.path.dirname(audio_path), exist_ok=True)
     
-    print(f"🗣️ Generating Audio + Subtitles...")
+    print(f"🗣️ Generating Audio ({len(full_script)} chars)...")
 
-    # 2. Generate Audio AND Subtitles
-    communicate = edge_tts.Communicate(full_script, "en-US-ChristopherNeural")
-    submaker = edge_tts.SubMaker()
-    
-    with open(audio_path, "wb") as file:
-        async for chunk in communicate.stream():
-            if chunk["type"] == "audio":
-                file.write(chunk["data"])
-            elif chunk["type"] == "WordBoundary":
-                submaker.feed(chunk)
-
-    # 3. Save the Subtitle file
-    with open(subtitle_path, "w", encoding="utf-8") as file:
-        file.write(submaker.generate_subs())
+    try:
+        communicate = edge_tts.Communicate(full_script, "en-US-ChristopherNeural")
+        submaker = edge_tts.SubMaker()
         
-    # Update JSON
-    data['audio_path'] = audio_path
-    data['subtitle_path'] = subtitle_path
-    with open(json_filename, 'w') as f:
-        json.dump(data, f, indent=4)
-    
-    print(f"✅ Audio & Subs saved to: assets/{folder_name}/")
+        with open(audio_path, "wb") as file:
+            async for chunk in communicate.stream():
+                if chunk["type"] == "audio":
+                    file.write(chunk["data"])
+                elif chunk["type"] == "WordBoundary":
+                    submaker.feed(chunk)
+                    
+        with open(subtitle_path, "w", encoding="utf-8") as file:
+            file.write(submaker.generate_subs())
+            
+        # --- SAFETY CHECK ---
+        # Check if file exists and is larger than 1KB
+        if not os.path.exists(audio_path) or os.path.getsize(audio_path) < 1000:
+            raise Exception("Audio generation failed (File is empty or too small)")
+
+        data['audio_path'] = audio_path
+        data['subtitle_path'] = subtitle_path
+        with open(json_filename, 'w') as f:
+            json.dump(data, f, indent=4)
+        
+        print(f"✅ Audio verified: {os.path.getsize(audio_path) / 1024:.2f} KB")
+
+    except Exception as e:
+        print(f"❌ CRITICAL AUDIO ERROR: {e}")
+        # Create a dummy file to prevent MoviePy crash (optional but safe)
+        if os.path.exists(audio_path):
+            os.remove(audio_path)
+        raise e # Stop the script here so we don't waste minutes
 
 if __name__ == "__main__":
-    asyncio.run(generate_voiceover("The_Glitch_in_the_Familiar.json"))
+    # Test path needs to be valid
+    pass
