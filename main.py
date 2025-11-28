@@ -9,7 +9,7 @@ from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 
-from free_creator import generate_free_script, get_viral_topic
+from creator import generate_free_script, get_viral_topic
 from free_artist import download_free_images
 from free_audio import generate_voiceover
 from editor import create_video
@@ -60,3 +60,4 @@ def run_once():
 
 if __name__ == "__main__":
     run_once()
+
