@@ -1,36 +1,36 @@
-name: Daily Shorts Generator
+name: Daily Video Bot
 
 on:
-  workflow_dispatch: # Allows you to click a button to run it manually
+  workflow_dispatch: # Button to run manually
   schedule:
-    - cron: '0 0,6,12,18 * * *' # Runs 4 times a day (Midnight, 6am, Noon, 6pm)
+    - cron: '0 6,14 * * *' # Runs twice a day (approx 11:30 AM & 7:30 PM IST)
 
 jobs:
-  build:
+  make_video:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
-
-      - name: Install Dependencies
+          python-version: '3.11' # Modern python for new libraries
+      
+      - name: Install Tools
         run: |
           sudo apt-get install -y ffmpeg imagemagick
           pip install -r requirements.txt
-          # Fix for ImageMagick policy (common error on Linux)
+          # Fix for ImageMagick policy (Required for Text)
           sudo sed -i 's/none/read,write/g' /etc/ImageMagick-6/policy.xml
-
-      - name: Run The Bot
+      
+      - name: Run Bot
         env:
+          # --- WE UNLOCK THE SECRETS HERE ---
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
-        run: python main.py
-
-      - name: Upload Video Artifact
+          YOUTUBE_TOKEN: ${{ secrets.YOUTUBE_TOKEN }}
+        run: python cloud_main.py
+      
+      - name: Upload Artifact (Backup)
         uses: actions/upload-artifact@v4
         with:
           name: finished-video
