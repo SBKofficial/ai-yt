@@ -8,6 +8,7 @@ api_key = os.environ.get("GOOGLE_API_KEY")
 genai.configure(api_key=api_key)
 
 def sanitize_filename(name):
+    # Fixes the "File not found" error by removing bad characters
     clean_name = re.sub(r'[^\w\s-]', '', name)
     return clean_name.strip().replace(' ', '_')
 
@@ -18,11 +19,12 @@ def get_viral_topic(history_file="history.txt"):
     else:
         existing_topics = ""
 
-    # Try the newest model, fallback to old reliable if it fails
+    # CHANGED: Switched to 'gemini-pro' (The Stable Model)
     try:
-        model = genai.GenerativeModel('gemini-1.5-flash')
-    except:
         model = genai.GenerativeModel('gemini-pro')
+    except:
+        print("⚠️ Model init failed. Check API Key.")
+        return "The Dark Forest Theory"
 
     prompt = f"""
     You are a YouTube Strategist for 'Echoes of Reality'.
@@ -36,19 +38,22 @@ def get_viral_topic(history_file="history.txt"):
     try:
         response = model.generate_content(prompt)
         topic = response.text.strip()
-        with open(history_file, "a") as f: f.write(topic + "\n")
+        
+        # Save to history
+        with open(history_file, "a") as f:
+            f.write(topic + "\n")
+            
         print(f"🤖 Topic: {topic}")
         return topic
+        
     except Exception as e:
         print(f"❌ Brain Error: {e}")
+        # Fallback if API fails
         return "The Dark Forest Theory" 
 
 def generate_free_script(topic):
-    # Try the newest model, fallback to old reliable
-    try:
-        model = genai.GenerativeModel('gemini-1.5-flash')
-    except:
-        model = genai.GenerativeModel('gemini-pro')
+    # CHANGED: Switched to 'gemini-pro'
+    model = genai.GenerativeModel('gemini-pro')
     
     prompt = f"""
     You are a dark mystery storyteller. Write a 50-second YouTube Shorts script about: {topic}.
