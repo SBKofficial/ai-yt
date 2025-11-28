@@ -1,0 +1,37 @@
+name: Daily Shorts Generator
+
+on:
+  workflow_dispatch: # Allows you to click a button to run it manually
+  schedule:
+    - cron: '0 0,6,12,18 * * *' # Runs 4 times a day (Midnight, 6am, Noon, 6pm)
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get install -y ffmpeg imagemagick
+          pip install -r requirements.txt
+          # Fix for ImageMagick policy (common error on Linux)
+          sudo sed -i 's/none/read,write/g' /etc/ImageMagick-6/policy.xml
+
+      - name: Run The Bot
+        env:
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+        run: python main.py
+
+      - name: Upload Video Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: finished-video
+          path: "*_FINAL.mp4"
