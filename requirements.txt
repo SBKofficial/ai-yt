@@ -3,7 +3,8 @@ google-api-python-client
 google-auth-oauthlib
 google-auth-httplib2
 requests
-edge-tts
+edge-tts>=6.1.9
+gTTS
 moviepy==1.0.3
 imageio-ffmpeg
 imageio>=2.5.0
