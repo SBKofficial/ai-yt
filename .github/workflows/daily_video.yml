@@ -28,7 +28,7 @@ jobs:
           # --- WE UNLOCK THE SECRETS HERE ---
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           YOUTUBE_TOKEN: ${{ secrets.YOUTUBE_TOKEN }}
-        run: python cloud_main.py
+        run: python main.py
       
       - name: Upload Artifact (Backup)
         uses: actions/upload-artifact@v4
