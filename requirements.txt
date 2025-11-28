@@ -1,7 +1,8 @@
 google-generativeai
 requests
 edge-tts
-moviepy<2.0
-pillow
-imageio==2.4.1
+moviepy==1.0.3
 imageio-ffmpeg
+imageio>=2.5.0
+numpy
+pillow
