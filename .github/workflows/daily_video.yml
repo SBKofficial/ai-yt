@@ -3,7 +3,7 @@ name: Daily Video Bot
 on:
   workflow_dispatch: # Button to run manually
   schedule:
-    - cron: '0 6,14 * * *' # Runs twice a day (approx 11:30 AM & 7:30 PM IST)
+    - cron: '0 6,12,18,23 * * *' # Runs twice a day (approx 11:30 AM & 7:30 PM IST)
 
 jobs:
   make_video:
