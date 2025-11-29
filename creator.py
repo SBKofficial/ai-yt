@@ -69,7 +69,7 @@ def get_viral_topic(history_file="history.txt"):
 
 def generate_free_script(topic):
     prompt = f"""
-    You are an elite screenwriter for a dark mystery channel. Write a viral 50-second YouTube Shorts script about: {topic}.
+    You are an elite screenwriter for a dark mystery channel. Write a 130-word script (approx 40 seconds)YouTube Shorts script about: {topic}.
     
     STRICT RULES:
     1. NO "Hello everyone" or "Welcome back". Start immediately with the horror/mystery.
