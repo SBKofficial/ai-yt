@@ -69,21 +69,26 @@ def get_viral_topic(history_file="history.txt"):
 
 def generate_free_script(topic):
     prompt = f"""
-    You are a dark mystery storyteller. Write a 50-second YouTube Shorts script about: {topic}.
+    You are an elite screenwriter for a dark mystery channel. Write a viral 50-second YouTube Shorts script about: {topic}.
     
-    Structure the response as valid JSON only:
+    STRICT RULES:
+    1. NO "Hello everyone" or "Welcome back". Start immediately with the horror/mystery.
+    2. Tone: Urgent, paranoid, intelligent, cinematic.
+    3. Formatting: Return valid JSON.
+    
+    STRUCTURE:
+    - Segment 1 (0-5s): The Hook. A terrifying fact or question.
+    - Segment 2-4 (5-40s): The Evidence. Short, punchy sentences. "They found a signal." "It wasn't random."
+    - Segment 5 (40-50s): The Twist/Climax. Leave the viewer unsettled.
+    - Viral Comment: A specific question to ask the audience to boost engagement.
+
+    JSON OUTPUT FORMAT:
     {{
-        "title": "Short catchy title",
-        "viral_comment": "A provoking question to ask viewers about {topic} to get comments",
+        "title": "Clickbait Title (Under 50 chars)",
+        "viral_comment": "Question for comments",
         "segments": [
-            {{
-                "text": "Hook sentence...",
-                "image_prompt": "Dark cinematic 8k wallpaper of {topic}"
-            }},
-            {{
-                "text": "Body sentence...",
-                "image_prompt": "Abstract horror art of..."
-            }}
+            {{ "text": "...", "image_prompt": "Cinematic shot of..." }},
+            {{ "text": "...", "image_prompt": "..." }}
         ]
     }}
     """
@@ -108,4 +113,5 @@ def generate_free_script(topic):
     except Exception as e:
         print(f"❌ Script Error: {e}")
         return None
+
 
