@@ -3,7 +3,7 @@ name: Daily Video Bot
 on:
   workflow_dispatch: # Button to run manually
   schedule:
-    - cron: '0 6,12,18,23 * * *' # Runs twice a day (approx 11:30 AM & 7:30 PM IST)
+    - cron: '0 6,12,18,23 * * *' # Runs 4 times a day (IST: 11:30 AM, 5:30 PM, 11:30 PM, 4:30 AM)
 
 jobs:
   make_video:
@@ -15,22 +15,21 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.11' # Modern python for new libraries
-      
+
       - name: Install Tools
         run: |
           sudo apt-get install -y ffmpeg imagemagick
           pip install -r requirements.txt
           # Fix for ImageMagick policy (Required for Text)
           sudo sed -i 's/none/read,write/g' /etc/ImageMagick-6/policy.xml
-      
+
       - name: Run Bot
         env:
-          # --- WE UNLOCK THE SECRETS HERE ---
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           YOUTUBE_TOKEN: ${{ secrets.YOUTUBE_TOKEN }}
-        run: python main.py
-      
-      - name: Upload Artifact (Backup)
+        run: python cloud_main.py
+
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: finished-video
