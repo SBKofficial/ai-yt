@@ -9,7 +9,10 @@ if not hasattr(PIL.Image, 'ANTIALIAS'):
     PIL.Image.ANTIALIAS = PIL.Image.LANCZOS
 
 from moviepy.editor import *
-from moviepy.video.tools.subtitles import SubtitlesClip
+# --- THIS WAS MISSING BEFORE ---
+import moviepy.audio.fx.all as afx 
+import moviepy.video.fx.all as vfx
+# -------------------------------
 
 def create_video(json_filename):
     print("   🔹 Step 1: Loading Data...")
@@ -44,18 +47,23 @@ def create_video(json_filename):
     print("   🔹 Step 3: Setting up Audio...")
     voice_clip = AudioFileClip(audio_path)
     
-    # Check for Background Music
+    # Check for Background Music (With Safety Net)
+    final_audio = voice_clip # Default to just voice
+    
     if os.path.exists(bg_music_path):
-        print("      - Adding Background Music...")
-        music_clip = AudioFileClip(bg_music_path)
-        # Loop music, lower volume, fade out
-        music_clip = afx.audio_loop(music_clip, duration=voice_clip.duration + 2)
-        music_clip = music_clip.volumex(0.10)
-        music_clip = music_clip.audio_fadeout(2)
-        final_audio = CompositeAudioClip([voice_clip, music_clip])
+        try:
+            print("      - Adding Background Music...")
+            music_clip = AudioFileClip(bg_music_path)
+            # Loop music to match voice length
+            music_clip = afx.audio_loop(music_clip, duration=voice_clip.duration + 2)
+            music_clip = music_clip.volumex(0.10)
+            music_clip = music_clip.audio_fadeout(2)
+            final_audio = CompositeAudioClip([voice_clip, music_clip])
+        except Exception as e:
+            print(f"      ⚠️ Music Failed: {e}. Skipping music.")
+            final_audio = voice_clip
     else:
-        print("      - No background music found (Skipping).")
-        final_audio = voice_clip
+        print("      - No background music file found.")
 
     # 3. VISUAL SETUP
     print("   🔹 Step 4: Processing Images...")
@@ -86,7 +94,7 @@ def create_video(json_filename):
     try:
         wrapped_title = "\n".join(textwrap.wrap(video_title.upper(), width=15))
         
-        # Use 'Arial' which is standard on Linux servers
+        # Use 'Arial' or 'DejaVuSans' which is standard on Linux servers
         txt_clip = TextClip(
             wrapped_title,
             fontsize=80,
