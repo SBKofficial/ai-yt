@@ -70,9 +70,11 @@ def get_viral_topic(history_file="history.txt"):
 def generate_free_script(topic):
     prompt = f"""
     You are a dark mystery storyteller. Write a 50-second YouTube Shorts script about: {topic}.
+    
     Structure the response as valid JSON only:
     {{
         "title": "Short catchy title",
+        "viral_comment": "A provoking question to ask viewers about {topic} to get comments",
         "segments": [
             {{
                 "text": "Hook sentence...",
@@ -106,3 +108,4 @@ def generate_free_script(topic):
     except Exception as e:
         print(f"❌ Script Error: {e}")
         return None
+
