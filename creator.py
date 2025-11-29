@@ -68,30 +68,30 @@ def get_viral_topic(history_file="history.txt"):
         return "The Dark Forest Theory" 
 
 def generate_free_script(topic):
-    prompt = f"""
-    You are an elite screenwriter for a dark mystery channel. Write a 130-word script (approx 40 seconds)YouTube Shorts script about: {topic}.
+        prompt = f"""
+    You are an elite viral screenwriter. Write a 50-second YouTube Shorts script about: {topic}.
     
-    STRICT RULES:
-    1. NO "Hello everyone" or "Welcome back". Start immediately with the horror/mystery.
-    2. Tone: Urgent, paranoid, intelligent, cinematic.
-    3. Formatting: Return valid JSON.
+    CRITICAL RULE: The first sentence must be a "Cold Open" hook. 
+    - BAD: "The Dark Forest theory is interesting."
+    - GOOD: "Do NOT scream in the woods. Here is why."
     
-    STRUCTURE:
-    - Segment 1 (0-5s): The Hook. A terrifying fact or question.
-    - Segment 2-4 (5-40s): The Evidence. Short, punchy sentences. "They found a signal." "It wasn't random."
-    - Segment 5 (40-50s): The Twist/Climax. Leave the viewer unsettled.
-    - Viral Comment: A specific question to ask the audience to boost engagement.
-
-    JSON OUTPUT FORMAT:
+    Structure as valid JSON:
     {{
-        "title": "Clickbait Title (Under 50 chars)",
-        "viral_comment": "Question for comments",
+        "title": "Clickbait Title (ALL CAPS)",
+        "viral_comment": "Controversial question",
         "segments": [
-            {{ "text": "...", "image_prompt": "Cinematic shot of..." }},
-            {{ "text": "...", "image_prompt": "..." }}
+            {{
+                "text": "The Hook (Must be under 7 words). Shocking statement.",
+                "image_prompt": "Terrifying, high contrast, hyper-detailed close-up shot of {topic}, 8k"
+            }},
+            {{
+                "text": "The Explanation (Fast paced)...",
+                "image_prompt": "Cinematic wide shot of..."
+            }}
         ]
     }}
     """
+
     
     print(f"🧠 Brainstorming: {topic}...")
     
