@@ -50,9 +50,14 @@ def upload_and_comment(video_path, title, topic, viral_comment):
         
         # 1. Upload Video
         description_text = (
-            f"The truth about {topic}.\n\n"
-            "Echoes of Reality explores the glitches in our world.\n"
-            "Subscribe for daily mysteries.\n#shorts #mystery #facts"
+            f"The terrifying truth about {topic}.\n\n"
+            "We explore the glitches in reality, cosmic horror, and the unexplained.\n"
+            "This video covers: " + title + "\n\n"
+            "👁️ Subscribe to the Archive: https://youtube.com/@EchoesOfRealityShorts?sub_confirmation=1\n\n"
+            "Questions asked in this video:\n"
+            "• Is this real?\n"
+            "• What are they hiding?\n\n"
+            "#shorts #mystery #documentary #scifi #paradox"
         )
 
         request_body = {
@@ -124,3 +129,4 @@ def run_once():
 if __name__ == "__main__":
     run_once()
     
+
