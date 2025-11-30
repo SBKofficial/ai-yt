@@ -1,4 +1,4 @@
-Import google.generativeai as genai
+import google.generativeai as genai
 import json
 import os
 import re
@@ -16,12 +16,10 @@ def generate_with_fallback(prompt):
     """
     Tries multiple model versions until one works.
     """
-    # PRIORITY LIST FOR LATE 2025:
     models_to_try = [
-        'gemini-2.5-flash', # Your requested model
-        'gemini-1.5-flash', # Backup fast model
-        'gemini-1.5-pro',   # Backup smart model
-        'gemini-2.0-flash'  # Alternative
+        'gemini-1.5-flash', 
+        'gemini-pro',
+        'gemini-1.5-pro-latest'
     ]
     
     for model_name in models_to_try:
@@ -31,7 +29,7 @@ def generate_with_fallback(prompt):
             response = model.generate_content(prompt)
             return response.text
         except Exception as e:
-            print(f"   ⚠️ {model_name} failed ({str(e)[:50]}...). Trying next...")
+            print(f"   ⚠️ {model_name} failed. Trying next...")
             time.sleep(1)
             
     raise Exception("❌ ALL models failed. Check your API Key permissions.")
@@ -68,25 +66,31 @@ def get_viral_topic(history_file="history.txt"):
         return "The Dark Forest Theory" 
 
 def generate_free_script(topic):
-        prompt = f"""
-    You are an elite viral screenwriter. Write a 50-second YouTube Shorts script about: {topic}.
+    # --- THE RETENTION UPGRADE ---
+    prompt = f"""
+    You are an elite viral screenwriter. Write a STRICTLY 40-SECOND YouTube Shorts script about: {topic}.
     
-    CRITICAL RULE: The first sentence must be a "Cold Open" hook. 
-    - BAD: "The Dark Forest theory is interesting."
-    - GOOD: "Do NOT scream in the woods. Here is why."
+    CRITICAL RULES:
+    1. MAX WORD COUNT: 110 words. Do not exceed this. (Mandatory for retention).
+    2. COLD OPEN: The first sentence must be a hook under 7 words.
+    3. NO FILLER: Jump straight into the horror.
     
-    Structure as valid JSON:
+    Structure as valid JSON only:
     {{
         "title": "Clickbait Title (ALL CAPS)",
         "viral_comment": "Controversial question",
         "segments": [
             {{
-                "text": "The Hook (Must be under 7 words). Shocking statement.",
+                "text": "The Hook (Shocking statement)...",
                 "image_prompt": "Terrifying, high contrast, hyper-detailed close-up shot of {topic}, 8k"
             }},
             {{
-                "text": "The Explanation (Fast paced)...",
+                "text": "The Mystery (Fast paced)...",
                 "image_prompt": "Cinematic wide shot of..."
+            }},
+            {{
+                "text": "The Twist (Leave them scared)...",
+                "image_prompt": "Abstract horror art of..."
             }}
         ]
     }}
