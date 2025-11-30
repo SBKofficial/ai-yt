@@ -14,12 +14,13 @@ def sanitize_filename(name):
 
 def generate_with_fallback(prompt):
     """
-    Tries multiple model versions until one works.
+    Tries models in order of quality: 2.5 -> 1.5 -> Pro
     """
     models_to_try = [
-        'gemini-1.5-flash', 
-        'gemini-pro',
-        'gemini-1.5-pro-latest'
+        'gemini-2.5-flash',      # <--- RESTORED: The Best Model
+        'gemini-1.5-flash',      # Backup 1
+        'gemini-1.5-pro-latest', # Backup 2
+        'gemini-pro'             # Last Resort
     ]
     
     for model_name in models_to_try:
