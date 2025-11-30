@@ -9,10 +9,8 @@ if not hasattr(PIL.Image, 'ANTIALIAS'):
     PIL.Image.ANTIALIAS = PIL.Image.LANCZOS
 
 from moviepy.editor import *
-# --- THIS WAS MISSING BEFORE ---
 import moviepy.audio.fx.all as afx 
 import moviepy.video.fx.all as vfx
-# -------------------------------
 
 def create_video(json_filename):
     print("   🔹 Step 1: Loading Data...")
@@ -47,14 +45,11 @@ def create_video(json_filename):
     print("   🔹 Step 3: Setting up Audio...")
     voice_clip = AudioFileClip(audio_path)
     
-    # Check for Background Music (With Safety Net)
-    final_audio = voice_clip # Default to just voice
-    
+    # Check for Background Music
     if os.path.exists(bg_music_path):
         try:
             print("      - Adding Background Music...")
             music_clip = AudioFileClip(bg_music_path)
-            # Loop music to match voice length
             music_clip = afx.audio_loop(music_clip, duration=voice_clip.duration + 2)
             music_clip = music_clip.volumex(0.10)
             music_clip = music_clip.audio_fadeout(2)
@@ -63,8 +58,8 @@ def create_video(json_filename):
             print(f"      ⚠️ Music Failed: {e}. Skipping music.")
             final_audio = voice_clip
     else:
-        print("      - No background music file found.")
-    # ... (Keep imports and data loading the same) ...
+        print("      - No background music found.")
+        final_audio = voice_clip
 
     # 3. VISUAL SETUP
     print("   🔹 Step 4: Processing Images...")
@@ -76,12 +71,10 @@ def create_video(json_filename):
         clip = ImageClip(img_path).set_duration(duration_per_image)
         clip = clip.resize(height=1280).set_position("center")
         
-        # --- HOOK UPGRADE: First image zooms fast ---
+        # --- HOOK UPGRADE: Fast Zoom for first image ---
         if index == 0:
-            # Fast Zoom In (1.0 -> 1.15 in short time)
             clip = clip.resize(lambda t: 1 + 0.1 * t)
         else:
-            # Normal slow Ken Burns for the rest
             zoom_mode = random.choice(['in', 'out'])
             if zoom_mode == 'in':
                 clip = clip.resize(lambda t: 1 + 0.04 * t)
@@ -94,15 +87,15 @@ def create_video(json_filename):
     base_video = concatenate_videoclips(clips, method="compose")
     base_video = base_video.set_audio(final_audio)
     
-    # 4. TEXT OVERLAY (HOOK UPGRADE)
+    # 4. TEXT OVERLAY
     print("   🔹 Step 5: Creating Hook Text...")
     try:
         wrapped_title = "\n".join(textwrap.wrap(video_title.upper(), width=15))
         
         txt_clip = TextClip(
             wrapped_title,
-            fontsize=95, # Bigger Font
-            color='yellow', # Yellow grabs attention more than white
+            fontsize=95,
+            color='yellow',
             font='DejaVu-Sans-Bold',
             stroke_color='black',
             stroke_width=5,
@@ -111,18 +104,19 @@ def create_video(json_filename):
             size=(720, None)
         )
         
-        # INSTANT APPEARANCE (No Fade In)
-        # Show for only first 3 seconds to not block visuals
         txt_clip = txt_clip.set_position(('center', 400)).set_duration(3.0)
         
-        # Background Box (High Contrast)
         bg_box = ColorClip(
             size=(720, int(txt_clip.h * 1.1)),
             color=(0,0,0)
         ).set_opacity(0.6).set_duration(3.0).set_position(('center', 400))
 
         final_video = CompositeVideoClip([base_video, bg_box, txt_clip])
-   
+    
+    except Exception as e:
+        print(f"⚠️ Text Overlay Failed: {e}. Exporting without text.")
+        final_video = base_video
+
     # 5. RENDER
     print("   🔹 Step 6: Rendering...")
     output_filename = f"{folder_name}_FINAL.mp4"
@@ -139,4 +133,5 @@ def create_video(json_filename):
     print(f"✅ VIDEO SAVED: {output_filename}")
 
 if __name__ == "__main__":
+    # Test
     pass
