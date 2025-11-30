@@ -92,7 +92,6 @@ def generate_free_script(topic):
     }}
     """
 
-    
     print(f"🧠 Brainstorming: {topic}...")
     
     try:
