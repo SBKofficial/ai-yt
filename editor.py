@@ -64,6 +64,7 @@ def create_video(json_filename):
             final_audio = voice_clip
     else:
         print("      - No background music file found.")
+    # ... (Keep imports and data loading the same) ...
 
     # 3. VISUAL SETUP
     print("   🔹 Step 4: Processing Images...")
@@ -71,57 +72,57 @@ def create_video(json_filename):
     duration_per_image = total_duration / len(image_paths)
 
     clips = []
-    for img_path in image_paths:
+    for index, img_path in enumerate(image_paths):
         clip = ImageClip(img_path).set_duration(duration_per_image)
         clip = clip.resize(height=1280).set_position("center")
         
-        # Ken Burns Zoom
-        zoom_mode = random.choice(['in', 'out'])
-        if zoom_mode == 'in':
-            clip = clip.resize(lambda t: 1 + 0.04 * t)
+        # --- HOOK UPGRADE: First image zooms fast ---
+        if index == 0:
+            # Fast Zoom In (1.0 -> 1.15 in short time)
+            clip = clip.resize(lambda t: 1 + 0.1 * t)
         else:
-            clip = clip.resize(lambda t: 1.10 - 0.04 * t)
+            # Normal slow Ken Burns for the rest
+            zoom_mode = random.choice(['in', 'out'])
+            if zoom_mode == 'in':
+                clip = clip.resize(lambda t: 1 + 0.04 * t)
+            else:
+                clip = clip.resize(lambda t: 1.10 - 0.04 * t)
         
-        # Dark Filter
         clip = clip.fx(vfx.colorx, 0.9)
         clips.append(clip)
 
     base_video = concatenate_videoclips(clips, method="compose")
     base_video = base_video.set_audio(final_audio)
     
-    # 4. TEXT OVERLAY
-    print("   🔹 Step 5: Creating Text Overlay...")
+    # 4. TEXT OVERLAY (HOOK UPGRADE)
+    print("   🔹 Step 5: Creating Hook Text...")
     try:
         wrapped_title = "\n".join(textwrap.wrap(video_title.upper(), width=15))
         
-        # Use 'Arial' or 'DejaVuSans' which is standard on Linux servers
         txt_clip = TextClip(
             wrapped_title,
-            fontsize=80,
-            color='white',
-            font='DejaVu-Sans-Bold', # Safe font for Linux
+            fontsize=95, # Bigger Font
+            color='yellow', # Yellow grabs attention more than white
+            font='DejaVu-Sans-Bold',
             stroke_color='black',
-            stroke_width=4,
+            stroke_width=5,
             method='caption',
             align='center',
             size=(720, None)
         )
         
-        txt_clip = txt_clip.set_position(('center', 300)).set_duration(3.5)
-        txt_clip = txt_clip.crossfadein(0.5).crossfadeout(0.5)
+        # INSTANT APPEARANCE (No Fade In)
+        # Show for only first 3 seconds to not block visuals
+        txt_clip = txt_clip.set_position(('center', 400)).set_duration(3.0)
         
-        # Background Box
+        # Background Box (High Contrast)
         bg_box = ColorClip(
-            size=(720, int(txt_clip.h * 1.2)),
+            size=(720, int(txt_clip.h * 1.1)),
             color=(0,0,0)
-        ).set_opacity(0.4).set_duration(3.5).set_position(('center', 300))
-        bg_box = bg_box.crossfadein(0.5).crossfadeout(0.5)
+        ).set_opacity(0.6).set_duration(3.0).set_position(('center', 400))
 
         final_video = CompositeVideoClip([base_video, bg_box, txt_clip])
-    except Exception as e:
-        print(f"⚠️ Text Overlay Failed: {e}. Exporting without text.")
-        final_video = base_video
-
+   
     # 5. RENDER
     print("   🔹 Step 6: Rendering...")
     output_filename = f"{folder_name}_FINAL.mp4"
