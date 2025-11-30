@@ -16,7 +16,6 @@ def generate_with_fallback(prompt):
     """
     Tries multiple model versions until one works.
     """
-    # Priority list (Newest -> Oldest)
     models_to_try = [
         'gemini-1.5-flash', 
         'gemini-pro',
