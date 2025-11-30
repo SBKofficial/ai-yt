@@ -96,7 +96,7 @@ def generate_free_script(topic):
     }}
     """
 
-    print(f"🧠 Brainstorming: {topic}...")
+    print(f"🧠 Brainstorming: {topic}")
     
     try:
         response_text = generate_with_fallback(prompt)
