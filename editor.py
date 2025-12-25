@@ -160,7 +160,7 @@ def create_video(json_filename):
         )
         
         # Position Title in Center
-        title_clip = title_clip.set_position(('center', 'center')).set_duration(3.0)
+        title_clip = title_clip.set_position(('center', '400')).set_duration(3.0)
         title_clip = title_clip.crossfadein(0.2)
 
         final_video = CompositeVideoClip([base_video, title_clip])
