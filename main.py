@@ -69,7 +69,7 @@ def upload_and_comment(video_path, title, topic, viral_comment):
                 'categoryId': '27'
             },
             'status': {
-                'privacyStatus': 'public', 
+                'privacyStatus': 'private', 
                 'selfDeclaredMadeForKids': False
             }
         }
